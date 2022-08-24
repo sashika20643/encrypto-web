@@ -41,18 +41,23 @@ Route::prefix('admin/dash')->middleware('auth','isAdmin')->group(function(){
 
 
 });
-Route::get('dash/files', function () {
-    $user_id=Auth::user()->id;
-    $files=App\Models\file::where('user_name',$user_id)->get();
 
-    return view('Admin.files')->with('files',$files);
-})->name('files');
-Route::post('dash/controller/file/upload',[Admin::class, 'Uploadfile'])->name('fileuploadController');
-Route::post('dash/controller/access/add',[Admin::class, 'addAccess'])->name('addAccess');
-Route::get('dash/controller/file/view/{id}',[Admin::class, 'fileView'])->name('fileview');
-Route::get('/dash/controller/access/remove/{id}',[Admin::class, 'removeAccess'])->name('removeAccess');
-Route::get('dash/controller/file/download/{id}',[Admin::class, 'fileDownload'])->name('fileDownload');
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('dash/files', function () {
+        $user_id=Auth::user()->id;
+        $files=App\Models\file::where('user_name',$user_id)->get();
+
+        return view('Admin.files')->with('files',$files);
+    })->name('files');
+    Route::post('dash/controller/file/upload',[Admin::class, 'Uploadfile'])->name('fileuploadController');
+    Route::post('dash/controller/access/add',[Admin::class, 'addAccess'])->name('addAccess');
+    Route::get('dash/controller/file/view/{id}',[Admin::class, 'fileView'])->name('fileview');
+    Route::get('/dash/controller/access/remove/{id}',[Admin::class, 'removeAccess'])->name('removeAccess');
+    Route::get('dash/controller/file/download/{id}',[Admin::class, 'fileDownload'])->name('fileDownload');
+
+
+});
 
 Route::prefix('user')->middleware('auth')->group(function(){
     Route::get('/dash', function () {

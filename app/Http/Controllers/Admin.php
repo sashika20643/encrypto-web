@@ -100,7 +100,7 @@ $file->first_name=$first_name;
 $file->final_name=$last_name;
 $file->size=$size;
 $file->type=$type;
-$file->password=\Hash::make($password);
+$file->password=$password;
 $file->save();
 $files=file::where('id',$user_id)->get();
 return redirect(Route('files'));
@@ -125,17 +125,29 @@ return redirect(Route('files'));
         public function fileDownload($id){
             $data=file::where('id',$id)->get();
             $resp=Http::post('http://127.0.0.1:5000/download', [
-                'final_name' => $data[0]->final_name,
+                'last_name' => $data[0]->final_name,
 
 
                 // 'file' => $request->file
             ]);
-            return $resp;
+            $response=Http::post('http://127.0.0.1:5000/decrypt', [
+                'first_name' => $data[0]->first_name,
+                'password' => $data[0]->password,
+                'last_name'=>$data[0]->final_name,
+
+
+
+                // 'file' => $request->file
+            ]);
+
+
+      return view('Admin.downloadfile')->with('filename',$data[0]->first_name);
+            // return \Response::download($response,$data[0]->first_name, $headers);
 
             // $accesslist=file_access::where('file_id',$id)->get();
 
 
-            return view('Admin.editfile')->with('file',$data[0])->with('users',$accesslist);
+            // return view('Admin.editfile')->with('file',$data[0])->with('users',$accesslist);
 
         }
 
