@@ -85,7 +85,7 @@
           <form action = "{{Route('fileuploadController')}}" method = "POST"  enctype = "multipart/form-data">
             @csrf
             <input class="form-control mb-3" type = "file" id="inputfile" name = "file"  required />
-            <input type="password" name="password" id="password"  style="display: none" required>
+            <input class="form-control mb-3" type="password" name="password" id="password"  style="display: none" required>
             <br>
             <button  id="encryptb"  class="btn btn-success" type="submit" value="submit" style="display:none;color:black;: rgb(234, 210, 175)"> Encrypt</button>
 {{-- <button type="submit" value="submit"> Upload</button> --}}

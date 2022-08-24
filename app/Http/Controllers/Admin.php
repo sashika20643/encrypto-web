@@ -103,7 +103,7 @@ $file->type=$type;
 $file->password=$password;
 $file->save();
 $files=file::where('id',$user_id)->get();
-return redirect(Route('files'));
+return redirect(Route('files'))->with('success',"File uploaded...");
 
         }
 

@@ -17,7 +17,7 @@ use App\Http\Controllers\Admin;
 Route::get('/', function () {
 
 
-    return view('welcome');
+    return redirect('/login');
 });
 Route::prefix('admin/dash')->middleware('auth','isAdmin')->group(function(){
     Route::get('/', function () {
