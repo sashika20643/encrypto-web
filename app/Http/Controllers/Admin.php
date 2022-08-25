@@ -121,6 +121,16 @@ return redirect(Route('files'))->with('success',"File uploaded...");
         }
 
 
+        public function AccessGivenFiles(){
+            $data=file::where('id',$id)->get();
+            $accesslist= DB::table('file')->join('stu_subs', 'stu_subs.sub_id', '=', 'subjects.id')->where('stu_subs.stu_id', '=', $id)->select('subjects.*')->get();
+
+
+
+
+        }
+
+
         //file download function
         public function fileDownload($id){
             $data=file::where('id',$id)->get();
