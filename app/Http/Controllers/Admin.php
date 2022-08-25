@@ -86,8 +86,8 @@ class Admin extends Controller
            $type=$request->file->getClientOriginalExtension();
 
            $password=$request->password;
-
-            $resp=Http::post('http://127.0.0.1:5000/encrypt', [
+           set_time_limit(0);
+            $resp=Http::timeout(3000)->post('http://127.0.0.1:5000/encrypt', [
                 'first_name' => $first_name,
                 'password' => $password,
                 'last_name'=>$last_name,
@@ -130,7 +130,8 @@ return redirect(Route('files'))->with('success',"File uploaded...");
 
                 // 'file' => $request->file
             ]);
-            $response=Http::post('http://127.0.0.1:5000/decrypt', [
+            set_time_limit(0);
+            $response=Http::timeout(3000)->post('http://127.0.0.1:5000/decrypt', [
                 'first_name' => $data[0]->first_name,
                 'password' => $data[0]->password,
                 'last_name'=>$data[0]->final_name,
