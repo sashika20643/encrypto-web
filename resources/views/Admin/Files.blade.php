@@ -85,6 +85,12 @@
           <form action = "{{Route('fileuploadController')}}" method = "POST"  enctype = "multipart/form-data">
             @csrf
             <input class="form-control mb-3" type = "file" id="inputfile" name = "file"  required />
+
+                <span class="me-2 text-xs font-weight-bold" id="ptxt">0%</span>
+
+            <div class="progress">
+                <div class="progress-bar bg-gradient-info" role="progressbar" id ="pgress" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
+              </div>
             <input class="form-control mb-3" type="password" name="password" id="password"  style="display: none" required>
             <br>
             <button  id="encryptb"  class="btn btn-success" type="submit" value="submit" style="display:none;color:black;: rgb(234, 210, 175)"> Encrypt</button>
@@ -108,6 +114,7 @@
     var size=file_data.size;
     var last_name='{{Auth::user()->id}}'+'{{time()}}'+'jpg';
     var password=$('#password').val();
+    var type=first_name.split('.').pop();
     var form_data = new FormData();
 
     form_data.append('file', file_data);
@@ -118,10 +125,26 @@ $.ajax({            type: 'POST',
 					cache: false,
                     contentType: false,
 					processData: false,
-					data: form_data,
+                    data: form_data,
+                    xhr: function() {
+        var xhr = new window.XMLHttpRequest();
+        xhr.upload.addEventListener("progress", function(evt) {
+            if (evt.lengthComputable) {
+                var percentComplete = (evt.loaded / evt.total) * 100 +'%';
+                $('#pgress').css('width',percentComplete);
+                $('#ptxt').html(percentComplete);
+                //Do something with upload progress here
+                console.log(percentComplete)
+            }
+       }, false);
+       return xhr;
+    },
+
 
 					complete: function (response) { // display success response
 						console.log(response);
+                        $('#pgress').hide();
+                        $('#ptxt').hide();
                         $('#inputfile').hide();
                         $('#upload').hide();
                         $('#password').show();
@@ -144,6 +167,7 @@ $.ajax({            type: 'POST',
 $('#encryptb').on('click', function() {
     $('#ppcont').hide();
     $('#gif').show();
+
 });
 
   </script>
