@@ -46,11 +46,16 @@
                       <span class="text-secondary text-xs font-weight-bold">{{$file->created_at }}</span>
                     </td>
                     <td class="align-middle">
-                      <a href="/dash/controller/file/download/{{$file->id}}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                      <a href="javascript:;" onclick="setval({{$file->id}});" class="popup-down text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
                         Download
                       </a>
                     </td>
                     <td class="align-middle">
+                        <a onclick="return confirm('Are you sure?')" href="/dash/controller/file/delete/{{$file->id}}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                          delete
+                        </a>
+                      </td>
+                      <td class="align-middle">
                         <a href="/dash/controller/file/view/{{$file->id}}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
                           Edit
                         </a>
@@ -69,8 +74,8 @@
 </div>
 
 
-<div class="popup-wrap" id="popup">
-    <div class="popup-box">
+<div class="popup-wrap pw" id="popup">
+    <div class="popup-box pb">
         <div class="container" id="ppcont">
         <p id="success" style="color: green"></p>
       <h4 id="title" class="mb-3"> Select file </h4>
@@ -99,15 +104,43 @@
 <button id="upload" class="btn btn-success" style="color:black">upload</button>
 </div>
 <img src="{{asset('assets/img/lottie1.gif')}}" alt="" srcset="" id="gif" style="display:none;max-height: 270px;">
-      <a class="close-btn popup-close" href="#">x</a>
+      <a class="close-btn popup-close pcu" href="#">x</a>
     </div>
   </div>
-  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+
+
+
+{{-- Download popup --}}
+
+<div class="popup-wrap popup-wrapd" id="popup">
+    <div class="popup-box popup-boxd">
+        <div class="container" id="ppcont">
+
+            <h3>Enter password to download</h3>
+          <form action = "{{Route('fileDownload')}}" method = "POST"  enctype = "multipart/form-data">
+            @csrf
+            <input class="form-control mb-3" type="password" name="password" id="dpassword"   required>
+            <input class="form-control mb-3" type="text" name="id" id="fileid"   style="display: none">
+            <br>
+            <button  id="download"  class="btn btn-success" type="submit" value="submit" style="color:black;: rgb(234, 210, 175)"> Download</button>
+          </form>
+
+</div>
+<a class="close-btn popup-close pc" href="#">x</a>
+    </div>
+  </div>
+
   <script src="{{asset('Js/fadein.js')}}"></script>
 
 
 
   <script>
+
+function setval(id){
+$('#fileid').val(id);
+}
+
+
     $('#upload').on('click', function() {
     var file_data = $('#inputfile').prop('files')[0];
     var first_name=file_data.name;

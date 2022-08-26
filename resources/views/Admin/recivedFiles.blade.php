@@ -18,7 +18,7 @@
           </tr>
         </thead>
         <tbody>
-            {{-- @if(!$file)
+            @if(!$files)
             No files to show
             @endif
             @foreach ($files as $file )
@@ -55,7 +55,7 @@
                     </a>
                   </td>
               </tr>
-            @endforeach --}}
+            @endforeach
 
 
 

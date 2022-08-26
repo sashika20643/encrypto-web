@@ -32,9 +32,12 @@
                     </div>
                   </div>
                   <div class="d-flex justify-content-start">
-                    <a href="/admin/profile/view/{{{$user->id}}}" type="button" class="btn btn-primary">View</a>
+
+                    <a href="/admin/profile/view/{{{$user->id}}}" type="button" class="btn btn-primary mr-2">&nbsp;View&nbsp;&nbsp;</a>
 
                   </div>
+                  <a  onclick="return confirm('Are you sure?')" href="/admin/dash/controller/user/delete/{{{$user->id}}}" type="button " class="btn btn-danger">Delete</a>
+
                 </div>
               </div>
             </div>

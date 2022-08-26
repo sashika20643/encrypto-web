@@ -100,7 +100,7 @@ $file->first_name=$first_name;
 $file->final_name=$last_name;
 $file->size=$size;
 $file->type=$type;
-$file->password=$password;
+$file->password=\Hash::make($password);
 $file->save();
 $files=file::where('id',$user_id)->get();
 return redirect(Route('files'))->with('success',"File uploaded...");
@@ -112,18 +112,27 @@ return redirect(Route('files'))->with('success',"File uploaded...");
 
 
         public function fileView($id){
+            if(file::where('user_name',Auth::user()->id)->where('id',$id)->exists()){
+
+
             $data=file::where('id',$id)->get();
             $accesslist=file_access::where('file_id',$id)->get();
 
 
-            return view('Admin.editfile')->with('file',$data[0])->with('users',$accesslist);
+            return view('Admin.editfile')->with('file',$data[0])->with('users',$accesslist);}
+            else{
+                return back()-> with('alert', 'access denied.');
+            }
 
         }
 
 
         public function AccessGivenFiles(){
-            $data=file::where('id',$id)->get();
-            $accesslist= DB::table('file')->join('stu_subs', 'stu_subs.sub_id', '=', 'subjects.id')->where('stu_subs.stu_id', '=', $id)->select('subjects.*')->get();
+
+            $data=Auth::user()->email;
+            $accesslist= DB::table('files')->join('file_accesses', 'file_accesses.file_id', '=', 'files.id')->where('file_accesses.user_id', '=', $data)->select('files.*')->get();
+
+             return view("Admin.recivedFiles")->with('files',$accesslist);
 
 
 
@@ -132,8 +141,15 @@ return redirect(Route('files'))->with('success',"File uploaded...");
 
 
         //file download function
-        public function fileDownload($id){
-            $data=file::where('id',$id)->get();
+        public function fileDownload(Request $request){
+            // return($request->id);
+            $data=file::where('id',$request->id)->get();
+            if(\Hash::check($request->password, $data[0]->password)){
+
+
+
+
+
             $resp=Http::post('http://127.0.0.1:5000/download', [
                 'last_name' => $data[0]->final_name,
 
@@ -143,16 +159,44 @@ return redirect(Route('files'))->with('success',"File uploaded...");
             set_time_limit(0);
             $response=Http::timeout(3000)->post('http://127.0.0.1:5000/decrypt', [
                 'first_name' => $data[0]->first_name,
-                'password' => $data[0]->password,
+                'password' => $request->password,
                 'last_name'=>$data[0]->final_name,
 
 
 
                 // 'file' => $request->file
             ]);
+            return view("Admin.downloadfile")->with("filename",$data[0]->first_name);
+        }
+        return back()-> with('alert', ' Access denied..');
+        }
 
 
-      return view('Admin.downloadfile')->with('filename',$data[0]->first_name);
+        public function deleteUser($id){
+            $user=User::where('id',$id)->get();
+            $file=file_access::where('user_id',$user[0]->email)->delete();
+            $user=User::where('id',$id)->firstorfail()->delete();
+
+
+            $data=User::where('role','!=','1')->get();
+            return view('Admin.Users')->with('users',$data)->with('success',"Deleted succussfully");
+        }
+            public function fileDelete($id){
+                $data=file::where('id',$id)->get();
+                $resp=Http::post('http://127.0.0.1:5000/delete', [
+                    'last_name' => $data[0]->final_name,
+
+
+                    // 'file' => $request->file
+                ]);
+
+                if($resp->successful()){
+                    $file=file::where('id',$id)->firstorfail()->delete();
+                    $file=file_access::where('file_id',$id)->delete();
+
+                    return back()-> with('success', 'Deleted Successfully.');
+                }
+                return back()-> with('alert', 'something went wrong.');
             // return \Response::download($response,$data[0]->first_name, $headers);
 
             // $accesslist=file_access::where('file_id',$id)->get();
@@ -175,7 +219,12 @@ return redirect(Route('files'))->with('success',"File uploaded...");
 
         public function addAccess(Request $request){
 
-
+if(Auth::user()->email==$request->email){
+    return redirect()->back()->with('alert','oops!its your email');
+}
+if(file_access::where('user_id',$request->email)->exists() && file_access::where('file_id',$request->file_id)->exists()){
+    return redirect()->back()->with('alert','already this user have acess');
+}
 
 
             if(User::where('email',$request->email)->exists()){

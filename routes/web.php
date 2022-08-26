@@ -34,6 +34,7 @@ Route::prefix('admin/dash')->middleware('auth','isAdmin')->group(function(){
         return view('Admin.addUser');
     })->name('addUsers');
 
+Route::get('controller/user/delete/{id}',[Admin::class, 'deleteUser'])->name('deleteUserController');
     Route::post('controller/user/add',[Admin::class, 'addUser'])->name('adduserController');
 // Route::post('dash/controller/file/upload',[Admin::class, 'Uploadfile'])->name('fileuploadController');
 
@@ -53,8 +54,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('dash/controller/file/upload',[Admin::class, 'Uploadfile'])->name('fileuploadController');
     Route::post('dash/controller/access/add',[Admin::class, 'addAccess'])->name('addAccess');
     Route::get('dash/controller/file/view/{id}',[Admin::class, 'fileView'])->name('fileview');
+    Route::get('dash/controller/file/delete/{id}',[Admin::class, 'fileDelete'])->name('fileDelete');
     Route::get('/dash/controller/access/remove/{id}',[Admin::class, 'removeAccess'])->name('removeAccess');
-    Route::get('dash/controller/file/download/{id}',[Admin::class, 'fileDownload'])->name('fileDownload');
+    Route::post('dash/controller/file/download',[Admin::class, 'fileDownload'])->name('fileDownload');
+    Route::get('dash/recivedfiles',[Admin::class,'AccessGivenFiles'] )->name('recivedfiles');
 
 
 });

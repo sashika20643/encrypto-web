@@ -1,9 +1,9 @@
 @extends('layouts.Admin')
 
 @section('content')
-<div class="d-flex  justify-content-between">
+<div class="d-flex  justify-reverse">
 
-    <button class="btn btn-danger">Delete </button>
+
     <button class="btn btn-primary  popup-btn"> Add New Acess</button>
     </div>
 
@@ -51,8 +51,8 @@
       </table>
     </div>
   </div>
-  <div class="popup-wrap" id="popup">
-    <div class="popup-box">
+  <div class="popup-wrap pw" id="popup">
+    <div class="popup-box pb">
         <h3 class="mb-3">Add User</h3>
         <form class="form-inline" action = "{{Route('addAccess')}}" method = "POST">
             @csrf
@@ -60,7 +60,7 @@
             <input class="form-control mr-sm-2 mb-3 " type="search" name="email" placeholder="Enter Email" aria-label="Search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Add</button>
           </form>
-      <a class="close-btn popup-close" href="#">x</a>
+      <a class="close-btn popup-close pcu" href="#">x</a>
     </div>
   </div>
   <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
