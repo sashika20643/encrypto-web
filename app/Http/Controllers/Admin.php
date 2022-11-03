@@ -131,20 +131,20 @@ class Admin extends Controller
         // $user_pw=$user->password;
 
            $first_name=$request->file->getClientOriginalName();
-           $last_name=Auth::user()->id.time();
+           $last_name=$request->last_name;
            $size=$request->file->getSize();
 
            $type=$request->file->getClientOriginalExtension();
 
            $password=$request->password;
-           set_time_limit(0);
-            $resp=Http::timeout(3000)->post('http://127.0.0.1:5000/encrypt', [
-                'first_name' => $first_name,
-                'password' => $password,
-                'last_name'=>$last_name,
+        //    set_time_limit(0);
+        //     $resp=Http::timeout(3000)->post('http://127.0.0.1:5000/encrypt', [
+        //         'first_name' => $first_name,
+        //         'password' => $password,
+        //         'last_name'=>$last_name,
 
-                // 'file' => $request->file
-            ]);
+        //         // 'file' => $request->file
+        //     ]);
 $file=new file;
 $file->user_name=$user_id;
 $file->first_name=$first_name;
@@ -157,8 +157,6 @@ $files=file::where('id',$user_id)->get();
 return redirect(Route('files'))->with('success',"File uploaded...");
 
         }
-
-
 
 
 
@@ -300,5 +298,48 @@ if(file_access::where('user_id',$request->email)->exists() && file_access::where
                  return redirect()->back()->with('alert','No user found');
             }
         }
+
+
+
+
+        //change password
+public function changePassword(Request $request){
+    $this->validate($request,[
+        'password' =>'required',
+        'new_password' => [
+            'required',
+            'string',
+            'min:6',             // must be at least 10 characters in length
+            'regex:/[a-z]/',      // must contain at least one lowercase letter
+            'regex:/[A-Z]/',      // must contain at least one uppercase letter
+            'regex:/[0-9]/',      // must contain at least one digit
+            'regex:/[@$!%*#?&]/', // must contain a special character
+        ],
+        'password_confirmation' => 'required|same:new_password'
+
+
+
+
+
+
+
+
+    ]);
+
+        if(\Hash::check($request->password, Auth::user()->password)){
+
+            $user=User::where('id',Auth::user()->id)->get();
+            $user[0]->password= \Hash::make($request->password);
+
+            return redirect()->back()->with('success','Successfully chnaged');
+
+        }
+        else{
+            return redirect()->back()->with('alert','Wrong password');
+        }
+
+
+    }
+
 
 }

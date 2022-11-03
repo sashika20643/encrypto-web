@@ -29,6 +29,7 @@ Route::prefix('admin/dash')->middleware('auth','isAdmin','twofactor')->group(fun
     })->name('dash');
     Route::get('/users',[Admin::class, 'Users'])->name('users');
 
+
     Route::get('/encrypt', function () {
         return view('Admin.encrypt');
     })->name('encrypt');
@@ -48,7 +49,7 @@ Route::get('controller/user/delete/{id}',[Admin::class, 'deleteUser'])->name('de
 });
 
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth','twofactor'])->group(function () {
     Route::get('dash/files', function () {
         $user_id=Auth::user()->id;
         $files=App\Models\file::where('user_name',$user_id)->get();
@@ -62,6 +63,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dash/controller/access/remove/{id}',[Admin::class, 'removeAccess'])->name('removeAccess');
     Route::post('dash/controller/file/download',[Admin::class, 'fileDownload'])->name('fileDownload');
     Route::get('dash/recivedfiles',[Admin::class,'AccessGivenFiles'] )->name('recivedfiles');
+    Route::post('dash/controller/file/upload',[Admin::class, 'Uploadfile'])->name('fileuploadController');
+
+    Route::get('/dash/profile', function () {
+        return view('Admin.profile');
+    })->name('profile');
+    Route::post('/dash/controller/changepw',[Admin::class, 'changepassword'])->name('changepwcontroller');
+
 
 
 });

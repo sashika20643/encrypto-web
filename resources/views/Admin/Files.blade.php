@@ -101,7 +101,7 @@ Are you sure?
 <div class="popup-wrap pw" id="popup">
     <div class="popup-box pb">
         <div class="container" id="ppcont">
-        <p id="success" style="color: green"></p>
+
       <h4 id="title" class="mb-3"> Select file </h4>
       <br>
       {{-- <form action = "http://127.0.0.1:5000/upload" method = "POST"  enctype = "multipart/form-data"> --}}
@@ -111,7 +111,7 @@ Are you sure?
 
 
 
-          <form action = "{{Route('fileuploadController')}}" method = "POST"  enctype = "multipart/form-data">
+          <form action = "{{Route('fileuploadController')}}" id="encryptf" method = "POST"  enctype = "multipart/form-data">
             @csrf
             <input class="form-control mb-3" type = "file" id="inputfile" name = "file"  required />
 
@@ -120,12 +120,13 @@ Are you sure?
             <div class="progress">
                 <div class="progress-bar bg-gradient-info" role="progressbar" id ="pgress"  aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
               </div>
-            <input class="form-control mb-3" type="password" name="password" id="password" oninput="checkvalid()"  style="display:none" required>
-            <div id="pwhelp" class="form-text" style="color: red; display:none" >Invalid - Must contain uppercase+lowercase+numeric+special character </div>
+            <input class="form-control mb-3" type="password" name="password" id="password" oninput="checkvalid()"  style="display:block" required>
+            <div id="pwhelp" class="form-text" style="color: red; display:block" >Invalid - Must contain uppercase+lowercase+numeric+special character </div>
 
             <br>
+            <input type="text" name="last_name" id="last_name1" value="xxx" style="display: none;">
 
-            <button  id="encryptb"  class="btn btn-success" disabled=true type="submit" value="submit" style="display:none;color:black;: rgb(234, 210, 175;)"> Encrypt</button>
+            <button  id="encryptb"  class="btn btn-success" disabled=true type="button"  style="display:none;color:black;: rgb(234, 210, 175;)"> Encrypt</button>
 {{-- <button type="submit" value="submit"> Upload</button> --}}
 </form>
 
@@ -133,8 +134,10 @@ Are you sure?
 
 
 
-<button id="upload" class="btn btn-success" style="color:black">upload</button>
+<button id="upload" class="btn btn-success" disabled=true style="color:black">upload</button>
 </div>
+<p id="success" style="color: green"></p>
+<p id ="pogressevent" style="color: rgb(250, 74, 74)"></p>
 <img src="{{asset('assets/img/lottie1.gif')}}" alt="" srcset="" id="gif" style="display:none;max-height: 270px;">
       <a class="close-btn popup-close pcu" href="#">x</a>
     </div>
@@ -214,16 +217,17 @@ $.ajax({            type: 'POST',
 
 					complete: function (response) { // display success response
 						console.log(response);
-                        $('#pgress').hide();
-                        $('#ptxt').hide();
+                        // $('#pgress').hide();
+                        // $('#ptxt').hide();
                         $('#inputfile').hide();
                         $('#upload').hide();
                         $('#password').show();
                         $('#pwhelp').show();
 
-                        $('#encryptb').show();
                         $('#success').html("uploaded to server Sucessfully...");
-                        $('#title').html("Input password to encrypt");
+                        $('#pogressevent').html("Encrypting ....");
+                        window.setTimeout(encrypt(), 2000);
+
 
 					},
 
@@ -237,6 +241,86 @@ $.ajax({            type: 'POST',
 
 });
 
+//encrypt
+
+ function encrypt() {
+    var file_data = $('#inputfile').prop('files')[0];
+    var first_name=file_data.name;
+    var currentdate = new Date();
+var datetime = currentdate.getDate() +""
+                + (currentdate.getMonth()+1)  +""
+                + currentdate.getFullYear() + ""
+                + currentdate.getHours() + ""
+                + currentdate.getMinutes() + ""
+                + currentdate.getSeconds();
+
+    var last_name={{Auth::user()->id}}+datetime;
+
+    var size=file_data.size;
+    var last_name='{{Auth::user()->id}}'+'{{time()}}';
+    $('#last_name1').val(last_name);
+    console.log($('#last_name1').val());
+    var password=$('#password').val();
+    var type=first_name.split('.').pop();
+    var form_data = new FormData();
+
+    form_data.append('first_name', first_name);
+    form_data.append('last_name', last_name);
+    form_data.append('password', password);
+    $('#ppcont').hide();
+    $('#gif').show();
+
+$.ajax({            type: 'POST',
+					url: 'http://127.0.0.1:5000/encrypt', // point to server-side URL
+					dataType: 'json', // what to expect back from server
+					cache: false,
+                    contentType: false,
+					processData: false,
+                    data: form_data,
+                    xhr: function() {
+        var xhr = new window.XMLHttpRequest();
+        xhr.upload.addEventListener("progress", function(evt) {
+            if (evt.lengthComputable) {
+                var percentComplete = (evt.loaded / evt.total) * 100 +'%';
+                $('#pgress').css('width',percentComplete);
+                $('#ptxt').html(percentComplete);
+                //Do something with upload progress here
+                console.log(percentComplete)
+            }
+       }, false);
+       return xhr;
+    },
+
+
+					complete: function (response) { // display success response
+						console.log(response);
+                        $('#encryptf').submit();
+
+
+                        // $('#pgress').hide();
+                        // $('#ptxt').hide();
+                        // $('#inputfile').hide();
+                        // $('#upload').hide();
+                        // $('#password').show();
+                        // $('#pwhelp').show();
+
+                        // $('#encryptb').show();
+                        // $('#success').html("uploaded to server Sucessfully...");
+                        // $('#title').html("Input password to encrypt");
+
+					},
+
+				});
+
+
+
+
+
+
+
+}
+
+
 
 $('#encryptb').on('click', function() {
     $('#ppcont').hide();
@@ -249,7 +333,7 @@ function checkvalid(){
    var passw=  /^[A-Za-z]\w{7,14}$/;
 if(inputtxt.match(passw))
 {
-    document.getElementById("encryptb").disabled = false;
+    document.getElementById("upload").disabled = false;
     $('#pwhelp').html("valid Password");
     $('#pwhelp').css('color','green');
 
