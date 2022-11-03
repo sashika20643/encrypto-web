@@ -2,7 +2,16 @@
 
 @section('content')
 
+<div class="wrap" id="pwrap" style="    width: 100%;
+height: 100%;
+display: none;
+position: fixed;
+top: 0px;
+left: 0px;
+content: '';
+background: rgba(0, 0, 0, 0.85);display:none">
 
+</div>
 <div class="containter ">
     <div class="d-flex flex-row-reverse">
     <button class="btn btn-primary  popup-btn"> Upload File</button>
@@ -51,7 +60,7 @@
                       </a>
                     </td>
                     <td class="align-middle">
-                        <a onclick="return confirm('Are you sure?')" href="/dash/controller/file/delete/{{$file->id}}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                        <a onclick="confirmbox();" href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
                           delete
                         </a>
                       </td>
@@ -61,6 +70,19 @@
                         </a>
                       </td>
                   </tr>
+
+<div class="promtbox pt-5 ps-5 pe-5 pb-5" id="promtbox" style="min-width: 100px;max-width:50%;position: absolute;left:50%;top:50%;transform:translate(-50%,-50%);background-color:rgb(245, 245, 245);display:none; z-index:1;">
+    <h2>
+Are you sure?
+    </h2>
+    <p>This file will delete permenetly.</p>
+<div class="flex" style="display: flex;justify-content:space-evenly;width:100%">
+    <a href="/dash/controller/file/delete/{{$file->id}}" class="btn btn-danger">Delete </a>
+    <button class="btn btn-warning" onclick="$('#promtbox').hide();$('#pwrap').hide();">Cancel </button>
+</div>
+</div>
+</div>
+
                 @endforeach
 
 
@@ -72,6 +94,8 @@
 
 
 </div>
+
+
 
 
 <div class="popup-wrap pw" id="popup">
@@ -94,13 +118,21 @@
                 <span class="me-2 text-xs font-weight-bold" id="ptxt">0%</span>
 
             <div class="progress">
-                <div class="progress-bar bg-gradient-info" role="progressbar" id ="pgress" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
+                <div class="progress-bar bg-gradient-info" role="progressbar" id ="pgress"  aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>
               </div>
-            <input class="form-control mb-3" type="password" name="password" id="password"  style="display: none" required>
+            <input class="form-control mb-3" type="password" name="password" id="password" oninput="checkvalid()"  style="display:none" required>
+            <div id="pwhelp" class="form-text" style="color: red; display:none" >Invalid - Must contain uppercase+lowercase+numeric+special character </div>
+
             <br>
-            <button  id="encryptb"  class="btn btn-success" type="submit" value="submit" style="display:none;color:black;: rgb(234, 210, 175)"> Encrypt</button>
+
+            <button  id="encryptb"  class="btn btn-success" disabled=true type="submit" value="submit" style="display:none;color:black;: rgb(234, 210, 175;)"> Encrypt</button>
 {{-- <button type="submit" value="submit"> Upload</button> --}}
 </form>
+
+
+
+
+
 <button id="upload" class="btn btn-success" style="color:black">upload</button>
 </div>
 <img src="{{asset('assets/img/lottie1.gif')}}" alt="" srcset="" id="gif" style="display:none;max-height: 270px;">
@@ -135,6 +167,12 @@
 
 
   <script>
+
+function confirmbox(){
+$('#promtbox').show();
+$('#pwrap').show();
+}
+
 
 function setval(id){
 $('#fileid').val(id);
@@ -181,6 +219,8 @@ $.ajax({            type: 'POST',
                         $('#inputfile').hide();
                         $('#upload').hide();
                         $('#password').show();
+                        $('#pwhelp').show();
+
                         $('#encryptb').show();
                         $('#success').html("uploaded to server Sucessfully...");
                         $('#title').html("Input password to encrypt");
@@ -197,11 +237,34 @@ $.ajax({            type: 'POST',
 
 });
 
+
 $('#encryptb').on('click', function() {
     $('#ppcont').hide();
     $('#gif').show();
 
 });
+
+function checkvalid(){
+  var inputtxt= $("#password").val();
+   var passw=  /^[A-Za-z]\w{7,14}$/;
+if(inputtxt.match(passw))
+{
+    document.getElementById("encryptb").disabled = false;
+    $('#pwhelp').html("valid Password");
+    $('#pwhelp').css('color','green');
+
+
+}
+else
+{
+    $('#pwhelp').css('color','red');
+
+    document.getElementById("encryptb").disabled = true;
+
+}
+
+
+}
 
   </script>
 @endsection

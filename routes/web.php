@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\TwoFactorController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -13,13 +15,15 @@ use App\Http\Controllers\Admin;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
+Route::get('verify/resend', 'App\Http\Controllers\Auth\TwoFactorController@resend')->name('verify.resend');
+Route::resource('verify', 'App\Http\Controllers\Auth\TwoFactorController')->only(['index', 'store']);
+// Route::get('verify/index',[TwoFactorController::class, 'index'])->name('verify.index');
 Route::get('/', function () {
 
 
     return redirect('/login');
 });
-Route::prefix('admin/dash')->middleware('auth','isAdmin')->group(function(){
+Route::prefix('admin/dash')->middleware('auth','isAdmin','twofactor')->group(function(){
     Route::get('/', function () {
         return view('Admin.dash');
     })->name('dash');
@@ -76,6 +80,7 @@ Route::get('/signup', function () {
 });
 
 
-Auth::routes();
+Auth::routes(['verify'=>true]);
+
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

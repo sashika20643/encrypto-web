@@ -59,7 +59,7 @@
             <input class="form-control mr-sm-2 mb-3 " type="search" name="file_id" value="{{$file->id}}" name="email" placeholder="Enter Email" aria-label="Search" style="display: none">
             <input class="form-control mr-sm-2 mb-3 " type="search" name="email" placeholder="Enter Email" aria-label="Search">
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Add</button>
-          </form>
+          </form> 
       <a class="close-btn popup-close pcu" href="#">x</a>
     </div>
   </div>

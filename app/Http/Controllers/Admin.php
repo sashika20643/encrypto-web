@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AccessReport;
+use App\Mail\Signup;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\file;
 use App\Models\file_access;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Auth;
+use Carbon\Carbon;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Auth\Events\Registered;
 
 
 
@@ -17,6 +22,47 @@ use Illuminate\Support\Facades\Http;
 class Admin extends Controller
 {
     //
+
+  public  function generateStrongPassword()
+{
+    $length = 12; $add_dashes = false; $available_sets = 'luds';
+	$sets = array();
+	if(strpos($available_sets, 'l') !== false)
+		$sets[] = 'abcdefghjkmnpqrstuvwxyz';
+	if(strpos($available_sets, 'u') !== false)
+		$sets[] = 'ABCDEFGHJKMNPQRSTUVWXYZ';
+	if(strpos($available_sets, 'd') !== false)
+		$sets[] = '23456789';
+	if(strpos($available_sets, 's') !== false)
+		$sets[] = '!@#$%&*?';
+
+	$all = '';
+	$password = '';
+	foreach($sets as $set)
+	{
+		$password .= $set[array_rand(str_split($set))];
+		$all .= $set;
+	}
+
+	$all = str_split($all);
+	for($i = 0; $i < $length - count($sets); $i++)
+		$password .= $all[array_rand($all)];
+
+	$password = str_shuffle($password);
+
+	if(!$add_dashes)
+		return $password;
+
+	$dash_len = floor(sqrt($length));
+	$dash_str = '';
+	while(strlen($password) > $dash_len)
+	{
+		$dash_str .= substr($password, 0, $dash_len) . '-';
+		$password = substr($password, $dash_len);
+	}
+	$dash_str .= $password;
+	return $dash_str;
+}
 
     public function addUser(Request $request){
 
@@ -41,7 +87,7 @@ class Admin extends Controller
 
 
 
-               $password=\Str::random(10); //turn the array into a string
+               $password=Admin::generateStrongPassword(); //turn the array into a string
 
 
             $user= new User;
@@ -49,6 +95,10 @@ class Admin extends Controller
             $user->email=$request->email;
             $user->password=\Hash::make($password);
             $user->save();
+            $email=$request->email;
+            $name=$request->name;
+            event(new Registered($user));
+            Mail::to($request->email)->send(new Signup($email ,$password,$name));
 
             return view('Admin.generateduser')->with('password',$password)->with('name',$request->name)->with('email',$request->email);
 
@@ -74,6 +124,7 @@ class Admin extends Controller
 
 
      public function Uploadfile(Request $request){
+
         $user_id=Auth::user()->id;
         // $user=User::where('id',$user_id)->get();
         // return $user;
@@ -149,15 +200,15 @@ return redirect(Route('files'))->with('success',"File uploaded...");
 
 
 
-
-            $resp=Http::post('http://127.0.0.1:5000/download', [
+                set_time_limit(0);
+            $resp=Http::timeout(30000)->post('http://127.0.0.1:5000/download', [
                 'last_name' => $data[0]->final_name,
 
 
                 // 'file' => $request->file
             ]);
             set_time_limit(0);
-            $response=Http::timeout(3000)->post('http://127.0.0.1:5000/decrypt', [
+            $response=Http::timeout(30000)->post('http://127.0.0.1:5000/decrypt', [
                 'first_name' => $data[0]->first_name,
                 'password' => $request->password,
                 'last_name'=>$data[0]->final_name,
@@ -166,6 +217,17 @@ return redirect(Route('files'))->with('success',"File uploaded...");
 
                 // 'file' => $request->file
             ]);
+            $userid=file::where('id',$request->id)->get()[0]->user_name;
+            $email=User::where('id',$userid)->get();
+            $time=Carbon::now();
+            $time=$time->toDateTimeString();
+            $demail=Auth::user()->email;
+
+
+
+            Mail::to($email[0])->send(new AccessReport($demail ,$time,$request->id));
+
+
             return view("Admin.downloadfile")->with("filename",$data[0]->first_name);
         }
         return back()-> with('alert', ' Access denied..');
