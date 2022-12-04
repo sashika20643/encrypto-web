@@ -81,7 +81,7 @@ Route::middleware(['auth','twofactor'])->group(function () {
 
 });
 
-Route::prefix('user')->middleware('auth')->group(function(){
+Route::prefix('user')->middleware(['auth','twofactor'])->group(function(){
     Route::get('/dash',[Admin::class, 'dash'])->name('dash');
     Route::get('/',[Admin::class, 'dash'])->name('dash');
 

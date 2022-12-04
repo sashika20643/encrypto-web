@@ -45,15 +45,11 @@
                   <span class="text-secondary text-xs font-weight-bold">{{$file->created_at }}</span>
                 </td>
                 <td class="align-middle">
-                  <a href="/dash/controller/file/download/{{$file->id}}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                    Download
-                  </a>
+                <a href="javascript:;" onclick="setval({{$file->id}});" class="popup-down text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                        Download
+                      </a>
                 </td>
-                <td class="align-middle">
-                    <a href="/dash/controller/file/view/{{$file->id}}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                      Edit
-                    </a>
-                  </td>
+         
               </tr>
             @endforeach
 
@@ -64,7 +60,32 @@
     </div>
   </div>
 
+  <div class="popup-wrap popup-wrapd" id="popup">
+    <div class="popup-box popup-boxd">
+        <div class="container" id="ppcont">
 
+            <h3>Enter password to download</h3>
+          <form action = "{{Route('fileDownload')}}" method = "POST"  enctype = "multipart/form-data">
+            @csrf
+            <input class="form-control mb-3" type="password" name="password" id="dpassword"   required>
+            <input class="form-control mb-3" type="text" name="id" id="fileid"   style="display: none">
+            <br>
+            <button  id="download"  class="btn btn-success" type="submit" value="submit" style="color:black;: rgb(234, 210, 175)"> Download</button>
+          </form>
+
+</div>
+<a class="close-btn popup-close pc" href="#">x</a>
+    </div>
+  </div>
+
+  <script src="{{asset('Js/fadein.js')}}"></script>
+<script>
+
+function setval(id){
+$('#fileid').val(id);
+}
+
+</script>
 </div>
 
 

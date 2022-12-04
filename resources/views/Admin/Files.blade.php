@@ -55,7 +55,7 @@ background: rgba(0, 0, 0, 0.85);display:none">
                       <span class="text-secondary text-xs font-weight-bold">{{$file->created_at }}</span>
                     </td>
                     <td class="align-middle">
-                      <a href="javascript:;" onclick="setval({{$file->id}});" class="popup-down text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                    <a href="javascript:;" onclick="setval({{$file->id}});" class="popup-down text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
                         Download
                       </a>
                     </td>
@@ -68,7 +68,7 @@ background: rgba(0, 0, 0, 0.85);display:none">
                       </td>
                       <td class="align-middle">
                         <a href="/dash/controller/file/view/{{$file->id}}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
-                          Edit
+                          Permission
                         </a>
                       </td>
                   </tr>

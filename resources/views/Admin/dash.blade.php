@@ -15,7 +15,7 @@
                       <p class="text-sm mb-0 text-capitalize font-weight-bold">Total users</p>
                       <h5 class="font-weight-bolder mb-0">
                        {{$user}}
-                        <span class="text-success text-sm font-weight-bolder">+55%</span>
+                        <span class="text-success text-sm font-weight-bolder">+</span>
                       </h5>
                     </div>
                   </div>
@@ -37,7 +37,7 @@
                       <p class="text-sm mb-0 text-capitalize font-weight-bold">Total files</p>
                       <h5 class="font-weight-bolder mb-0">
                         {{$file}}
-                        <span class="text-success text-sm font-weight-bolder">+3%</span>
+                        <span class="text-success text-sm font-weight-bolder">+</span>
                       </h5>
                     </div>
                   </div>
@@ -60,7 +60,7 @@
                       <p class="text-sm mb-0 text-capitalize font-weight-bold">Total size</p>
                       <h5 class="font-weight-bolder mb-0">
                         {{$size}}MB
-                        <span class="text-danger text-sm font-weight-bolder">-2%</span>
+                        <span class="text-danger text-sm font-weight-bolder">-</span>
                       </h5>
                     </div>
                   </div>
