@@ -8,7 +8,7 @@
 </head>
 <body>
     download will start soon.....
-    <form  name="myForm" id="myForm" action="http://127.0.0.1:5000/downloadfile" method="POST">
+    <form  name="myForm" id="myForm" action="http://sashika20643.pythonanywhere.com/downloadfile" method="POST">
         <input type="text" name="filename" value="{{$filename}}" style="display: none">
     </form>
 

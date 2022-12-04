@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('size');
             $table->string('type');
             $table->string('password');
-            $table->string('link');
+         
 
             $table->timestamps();
         });

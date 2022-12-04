@@ -1,4 +1,4 @@
-@extends('layouts.Admin')
+@extends('layouts.layout')
 
 @section('content')
 
@@ -60,9 +60,11 @@ background: rgba(0, 0, 0, 0.85);display:none">
                       </a>
                     </td>
                     <td class="align-middle">
-                        <a onclick="confirmbox();" href="javascript:;" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
+                        <a onclick="return confirm('Are you sure?')" href="/dash/controller/file/delete/{{$file->id}}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
                           delete
                         </a>
+
+
                       </td>
                       <td class="align-middle">
                         <a href="/dash/controller/file/view/{{$file->id}}" class="text-secondary font-weight-bold text-xs" data-toggle="tooltip" data-original-title="Edit user">
@@ -71,13 +73,13 @@ background: rgba(0, 0, 0, 0.85);display:none">
                       </td>
                   </tr>
 
-<div class="promtbox pt-5 ps-5 pe-5 pb-5" id="promtbox" style="min-width: 100px;max-width:50%;position: absolute;left:50%;top:50%;transform:translate(-50%,-50%);background-color:rgb(245, 245, 245);display:none; z-index:1;">
+                  <div class="promtbox pt-5 ps-5 pe-5 pb-5" id="promtbox" style="min-width: 100px;max-width:50%;position: absolute;left:50%;top:50%;transform:translate(-50%,-50%);background-color:rgb(245, 245, 245);display:none; z-index:1;">
     <h2>
 Are you sure?
     </h2>
     <p>This file will delete permenetly.</p>
 <div class="flex" style="display: flex;justify-content:space-evenly;width:100%">
-    <a href="/dash/controller/file/delete/{{$file->id}}" class="btn btn-danger">Delete </a>
+    <a  href="javascript:;" onclick="delefile({{$file->id}});" class="btn btn-danger">Delete </a>
     <button class="btn btn-warning" onclick="$('#promtbox').hide();$('#pwrap').hide();">Cancel </button>
 </div>
 </div>
@@ -171,6 +173,8 @@ Are you sure?
 
   <script>
 
+var web = 'http://sashika20643.pythonanywhere.com';
+
 function confirmbox(){
 $('#promtbox').show();
 $('#pwrap').show();
@@ -194,7 +198,7 @@ $('#fileid').val(id);
     form_data.append('file', file_data);
 
 $.ajax({            type: 'POST',
-					url: 'http://127.0.0.1:5000/upload', // point to server-side URL
+					url: web+'/upload', // point to server-side URL
 					dataType: 'json', // what to expect back from server
 					cache: false,
                     contentType: false,
@@ -226,7 +230,7 @@ $.ajax({            type: 'POST',
 
                         $('#success').html("uploaded to server Sucessfully...");
                         $('#pogressevent').html("Encrypting ....");
-                        window.setTimeout(encrypt(), 2000);
+                        window.setTimeout(encrypt(), 3000);
 
 
 					},
@@ -271,7 +275,7 @@ var datetime = currentdate.getDate() +""
     $('#gif').show();
 
 $.ajax({            type: 'POST',
-					url: 'http://127.0.0.1:5000/encrypt', // point to server-side URL
+					url: web+'/encrypt', // point to server-side URL
 					dataType: 'json', // what to expect back from server
 					cache: false,
                     contentType: false,
@@ -330,7 +334,7 @@ $('#encryptb').on('click', function() {
 
 function checkvalid(){
   var inputtxt= $("#password").val();
-   var passw=  /^[A-Za-z]\w{7,14}$/;
+   var passw= /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
 if(inputtxt.match(passw))
 {
     document.getElementById("upload").disabled = false;
@@ -342,12 +346,19 @@ if(inputtxt.match(passw))
 else
 {
     $('#pwhelp').css('color','red');
-
-    document.getElementById("encryptb").disabled = true;
+    $('#pwhelp').html("Invalid - Must contain uppercase+lowercase+numeric+special character ");
+    document.getElementById("upload").disabled = true;
 
 }
 
 
+}
+
+function delefile(id){
+
+
+  // Simulate a mouse click:
+window.location.href = "/dash/controller/file/delete/"+id;
 }
 
   </script>

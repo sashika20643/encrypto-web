@@ -22,6 +22,9 @@ use Illuminate\Auth\Events\Registered;
 class Admin extends Controller
 {
     //
+    
+    // const web = 'http://sashika20643.pythonanywhere.com';
+    // const web2= 'http://127.0.0.1:5000';
 
   public  function generateStrongPassword()
 {
@@ -119,44 +122,44 @@ class Admin extends Controller
 
     public function Users(){
         $data=User::where('role','!=','1')->get();
-            return view('Admin.Users')->with('users',$data);
+            return view('Admin.users')->with('users',$data);
         }
 
 
-     public function Uploadfile(Request $request){
+//      public function Uploadfile(Request $request){
 
-        $user_id=Auth::user()->id;
-        // $user=User::where('id',$user_id)->get();
-        // return $user;
-        // $user_pw=$user->password;
+//         $user_id=Auth::user()->id;
+//         // $user=User::where('id',$user_id)->get();
+//         // return $user;
+//         // $user_pw=$user->password;
 
-           $first_name=$request->file->getClientOriginalName();
-           $last_name=$request->last_name;
-           $size=$request->file->getSize();
+//            $first_name=$request->file->getClientOriginalName();
+//            $last_name=$request->last_name;
+//            $size=$request->file->getSize();
 
-           $type=$request->file->getClientOriginalExtension();
+//            $type=$request->file->getClientOriginalExtension();
 
-           $password=$request->password;
-        //    set_time_limit(0);
-        //     $resp=Http::timeout(3000)->post('http://127.0.0.1:5000/encrypt', [
-        //         'first_name' => $first_name,
-        //         'password' => $password,
-        //         'last_name'=>$last_name,
+//            $password=$request->password;
+//         //    set_time_limit(0);
+//         //     $resp=Http::timeout(3000)->post('http://127.0.0.1:5000/encrypt', [
+//         //         'first_name' => $first_name,
+//         //         'password' => $password,
+//         //         'last_name'=>$last_name,
 
-        //         // 'file' => $request->file
-        //     ]);
-$file=new file;
-$file->user_name=$user_id;
-$file->first_name=$first_name;
-$file->final_name=$last_name;
-$file->size=$size;
-$file->type=$type;
-$file->password=\Hash::make($password);
-$file->save();
-$files=file::where('id',$user_id)->get();
-return redirect(Route('files'))->with('success',"File uploaded...");
+//         //         // 'file' => $request->file
+//         //     ]);
+// $file=new file;
+// $file->user_name=$user_id;
+// $file->first_name=$first_name;
+// $file->final_name=$last_name;
+// $file->size=$size;
+// $file->type=$type;
+// $file->password=\Hash::make($password);
+// $file->save();
+// $files=file::where('id',$user_id)->get();
+// return redirect(Route('files'))->with('success',"File uploaded...");
 
-        }
+//         }
 
 
 
@@ -199,14 +202,14 @@ return redirect(Route('files'))->with('success',"File uploaded...");
 
 
                 set_time_limit(0);
-            $resp=Http::timeout(30000)->post('http://127.0.0.1:5000/download', [
+            $resp=Http::timeout(30000)->post('http://sashika20643.pythonanywhere.com/download', [
                 'last_name' => $data[0]->final_name,
 
 
                 // 'file' => $request->file
             ]);
             set_time_limit(0);
-            $response=Http::timeout(30000)->post('http://127.0.0.1:5000/decrypt', [
+            $response=Http::timeout(30000)->post('http://sashika20643.pythonanywhere.com/decrypt', [
                 'first_name' => $data[0]->first_name,
                 'password' => $request->password,
                 'last_name'=>$data[0]->final_name,
@@ -241,9 +244,12 @@ return redirect(Route('files'))->with('success',"File uploaded...");
             $data=User::where('role','!=','1')->get();
             return view('Admin.Users')->with('users',$data)->with('success',"Deleted succussfully");
         }
-            public function fileDelete($id){
+        public function fileDelete($id){
+            // return $id;
+            
                 $data=file::where('id',$id)->get();
-                $resp=Http::post('http://127.0.0.1:5000/delete', [
+               
+                $resp=Http::post('http://sashika20643.pythonanywhere.com/delete', [
                     'last_name' => $data[0]->final_name,
 
 
@@ -329,7 +335,8 @@ public function changePassword(Request $request){
         if(\Hash::check($request->password, Auth::user()->password)){
 
             $user=User::where('id',Auth::user()->id)->get();
-            $user[0]->password= \Hash::make($request->password);
+            $user[0]->password= \Hash::make($request->new_password);
+          
 
             return redirect()->back()->with('success','Successfully chnaged');
 
@@ -341,5 +348,17 @@ public function changePassword(Request $request){
 
     }
 
+    public function dash(){
+$user=User::where('role','!=','1')->get();
+$files=File::all();
+$fsize=File::sum('size');
+$fsize=round($fsize/1000000,2);
+
+$filecount=$files->count();
+$ucount=$user->count();
+
+        return view('Admin.dash')->with('user',$ucount)->with('file',$filecount)->with('size',$fsize);
+
+    }
 
 }
